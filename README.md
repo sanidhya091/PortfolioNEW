@@ -1,10 +1,10 @@
-# Portfolio
+# Sanidhya Singh — portfolio
 
-A personal site for a designer or developer: a counted preloader, an
-oversized name, a services marquee, a selected-work grid with parallax and a
-cursor-following label, an about teaser, an expanding services list, rotating
-testimonials and a contact section with a working form. Each project has a
-case-study page with a next-project link, and there is a full about page.
+A personal portfolio for a full-stack developer and AI product builder. Dark,
+typography-led, with a counted preloader, a rotating role line, project cards
+linked to live demos and source, an in-progress section for QueueLess and Oddly,
+a skills breakdown, education and job simulations, and a contact section with
+working email, LinkedIn, GitHub and résumé links.
 
 ## Run it
 
@@ -14,22 +14,25 @@ bun run dev        # http://localhost:5173
 bun run build      # dist/client (assets) + dist/portfolio/index.js (Worker)
 ```
 
-## Make it yours
+## Content
 
-- `src/data/site.ts` is the whole site: your name, role, location, socials,
-  projects, services, testimonials and experience. Images live in
-  `public/images`; each project has one cover and the case-study page crops it
-  for detail shots until you add more.
-- `src/app/pages/*` are the three pages; `src/app/components/motion.tsx` holds
-  the reusable animation pieces (masked line reveals, parallax, magnetic
-  buttons, the rotating badge).
-- `src/styles.css` holds the tokens: a paper canvas, ink text, one electric
-  accent, Bricolage Grotesque for display type. Everything rounded is a
-  squircle via `corner-shape`; true circles use `.round`.
-- `src/worker/index.ts` receives the contact form at `/api/contact`. Forward
-  it to your inbox with an email API (key in Sites → Secrets) or save it to D1.
+- `src/data/site.ts` is the whole site: profile, links, projects, in-progress
+  products, skills, education and simulations. Project copy and links are drawn
+  from the existing portfolio, the SS-Portfolio repository and `public/resume.pdf`.
+- `public/resume.pdf` is the current résumé. The download button saves it as
+  `Sanidhya_Singh_Resume.pdf`.
+- `public/images` holds the real project screenshots (CodeSense, InvoiceAI,
+  Lost & Found). Anveshak has no screenshot in the repository, so its visual is
+  a generated SVG (`src/app/components/art.tsx`) rather than a stock image.
 
-Motion respects `prefers-reduced-motion`, and the preloader runs once per tab.
+## Notes
+
+- QueueLess is presented as an MVP in development and Oddly as frontend complete
+  with the backend in progress. Neither is described as launched.
+- No testimonials, client work, awards, CGPA or usage metrics are shown, because
+  none of those are verified in the source material.
+- There is no contact form: the page links straight to email, so no message can
+  silently disappear.
 
 ## Deploy with Freebuff Sites
 

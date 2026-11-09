@@ -10,8 +10,8 @@ const ease = [0.22, 1, 0.36, 1] as const
  * what gets observed: a line translated out of its overflow-hidden mask has
  * no visible area, so observing the line itself would never fire.
  */
-export function Lines({ lines, className, delay = 0, as: Tag = 'h1' }: { lines: ReactNode[]; className?: string; delay?: number; as?: 'h1' | 'h2' | 'p' }) {
-  const ref = useRef<HTMLHeadingElement>(null)
+export function Lines({ lines, className, delay = 0, as: Tag = 'h1' }: { lines: ReactNode[]; className?: string; delay?: number; as?: 'h1' | 'h2' | 'p' | 'div' }) {
+  const ref = useRef<HTMLDivElement>(null)
   const inView = useInView(ref, { once: true, margin: '0px 0px -5% 0px' })
   return (
     <Tag ref={ref} className={className}>
@@ -46,14 +46,14 @@ export function Parallax({ src, alt, className, strength = 8 }: { src: string; a
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] })
   const y = useTransform(scrollYProgress, [0, 1], [`-${strength}%`, `${strength}%`])
   return (
-    <div ref={ref} className={cx('image-frame relative', className)}>
+    <div ref={ref} className={cx('relative overflow-hidden bg-surface-2', className)}>
       <motion.img src={src} alt={alt} style={{ y }} className="absolute inset-0 size-full scale-[1.12] object-cover" loading="lazy" />
     </div>
   )
 }
 
 /** A button that leans toward the cursor. */
-export function Magnetic({ children, className, strength = 0.3 }: { children: ReactNode; className?: string; strength?: number }) {
+export function Magnetic({ children, className, strength = 0.25 }: { children: ReactNode; className?: string; strength?: number }) {
   const ref = useRef<HTMLDivElement>(null)
   const x = useSpring(useMotionValue(0), { stiffness: 220, damping: 18, mass: 0.4 })
   const y = useSpring(useMotionValue(0), { stiffness: 220, damping: 18, mass: 0.4 })

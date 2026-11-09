@@ -1,95 +1,150 @@
+import { ArrowLeft, ArrowUpRight, ExternalLink } from 'lucide-react'
 import { motion } from 'motion/react'
-import { ArrowLeft, ArrowUpRight } from 'lucide-react'
+import { useEffect } from 'react'
 import { Link, Navigate, useParams } from 'react-router'
 
-import { bySlug, projects } from '../../data/site'
-import { Lines, Parallax, Reveal } from '../components/motion'
-
-const ease = [0.22, 1, 0.36, 1] as const
+import { bySlug, projects, site } from '../../data/site'
+import { AnveshakArt } from '../components/art'
+import { GithubIcon } from '../components/icons'
+import { Lines, Reveal } from '../components/motion'
 
 export function Work() {
   const { slug } = useParams()
   const project = slug ? bySlug(slug) : undefined
+
+  useEffect(() => {
+    if (!project) return
+    const previous = document.title
+    document.title = `${project.title} — ${site.name}`
+    return () => {
+      document.title = previous
+    }
+  }, [project])
+
   if (!project) return <Navigate to="/" replace />
-  const index = projects.findIndex((p) => p.slug === project.slug)
+
+  const index = projects.findIndex((item) => item.slug === project.slug)
   const next = projects[(index + 1) % projects.length]
 
   return (
     <article className="mx-auto max-w-[1400px] px-5 pt-28 sm:px-8 sm:pt-36">
-      <Link to="/#work" className="inline-flex h-9 items-center gap-1.5 text-[14px] text-muted transition-colors hover:text-fg">
+      <Link to="/#work" className="inline-flex items-center gap-1.5 text-[13px] text-muted transition-colors hover:text-fg">
         <ArrowLeft className="size-4" />
         All work
       </Link>
 
-      <div className="mt-8 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
-        <Lines as="h1" className="font-display text-[clamp(56px,10vw,150px)]" lines={[project.title]} />
-        <Reveal delay={0.2} className="max-w-md text-pretty text-[17px] leading-relaxed text-muted lg:pb-4">
-          {project.summary}
+      <div className="mt-8 grid gap-8 lg:grid-cols-[1.25fr_0.75fr] lg:items-end lg:gap-16">
+        <div>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="chip">{project.category}</span>
+            <span className="chip">{project.year}</span>
+            <span className="chip border-accent/30 bg-accent/10 text-accent">{project.status}</span>
+            {project.badge && <span className="chip border-line-strong text-fg/70">{project.badge}</span>}
+          </div>
+          <Lines as="h1" className="mt-6 font-display text-[clamp(48px,8.6vw,128px)]" lines={[project.title]} />
+        </div>
+
+        <Reveal delay={0.12}>
+          <p className="text-pretty text-[16px] leading-relaxed text-muted">{project.summary}</p>
+          <div className="mt-6 flex flex-wrap gap-2.5">
+            {project.live && (
+              <a href={project.live} target="_blank" rel="noreferrer" className="btn btn-accent">
+                Visit live
+                <ExternalLink className="size-4" />
+              </a>
+            )}
+            {project.github && (
+              <a href={project.github} target="_blank" rel="noreferrer" className="btn btn-ghost">
+                View source
+                <GithubIcon className="size-4" />
+              </a>
+            )}
+          </div>
         </Reveal>
       </div>
 
       <motion.div
-        initial={{ opacity: 0, y: 30, scale: 0.98 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 1.1, delay: 0.2, ease }}
-        className="mt-12 overflow-hidden rounded-[32px]"
-        style={{ background: project.tint }}
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.9, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
+        className="mt-10 overflow-hidden rounded-[30px] border border-line bg-surface-2"
       >
-        <Parallax src={project.cover} alt={project.title} className="aspect-[16/10] sm:aspect-[16/9]" strength={5} />
+        {project.cover ? (
+          <img
+            src={project.cover}
+            alt={project.coverAlt ?? project.title}
+            className="aspect-[16/9] w-full object-cover object-top"
+          />
+        ) : (
+          <AnveshakArt className="aspect-[16/9] w-full" />
+        )}
       </motion.div>
 
-      <div className="mt-16 grid gap-12 lg:grid-cols-[320px_1fr] lg:gap-24">
-        <Reveal>
-          <dl className="grid grid-cols-2 gap-x-6 gap-y-8 text-[14px] lg:grid-cols-1">
-            {[
-              ['Client', project.client],
-              ['Year', project.year],
-              ['Role', project.role.join(', ')],
-              ['Delivered', project.deliverables.join(', ')],
-            ].map(([label, value]) => (
-              <div key={label} className="border-t border-line pt-3">
-                <dt className="text-muted">{label}</dt>
-                <dd className="mt-1 text-fg">{value}</dd>
-              </div>
-            ))}
-            {project.link && (
-              <div className="border-t border-line pt-3">
-                <a href={project.link} className="link-draw inline-flex items-center gap-1 font-medium">
-                  Visit the site
-                  <ArrowUpRight className="size-4" />
-                </a>
-              </div>
-            )}
+      <div className="mt-14 grid gap-12 lg:grid-cols-[260px_1fr] lg:gap-20">
+        <aside>
+          <dl className="divide-y divide-line border-y border-line text-[13px]">
+            <div className="py-4">
+              <dt className="font-mono text-[9.5px] uppercase tracking-[0.16em] text-faint">Year</dt>
+              <dd className="mt-1 text-fg/85">{project.year}</dd>
+            </div>
+            <div className="py-4">
+              <dt className="font-mono text-[9.5px] uppercase tracking-[0.16em] text-faint">Status</dt>
+              <dd className="mt-1 text-fg/85">{project.status}</dd>
+            </div>
+            <div className="py-4">
+              <dt className="font-mono text-[9.5px] uppercase tracking-[0.16em] text-faint">Category</dt>
+              <dd className="mt-1 text-fg/85">{project.category}</dd>
+            </div>
           </dl>
-        </Reveal>
-        <div className="max-w-2xl">
-          {project.body.map((paragraph, i) => (
-            <Reveal key={i} delay={i * 0.05}>
-              <p className={`text-pretty leading-relaxed text-fg/90 ${i === 0 ? 'font-display text-[28px] leading-[1.2] sm:text-[36px]' : 'mt-6 text-[17px] text-muted'}`}>{paragraph}</p>
+
+          <p className="mt-6 font-mono text-[9.5px] uppercase tracking-[0.16em] text-faint">Stack</p>
+          <ul className="mt-3 flex flex-wrap gap-1.5">
+            {project.stack.map((item) => (
+              <li key={item} className="chip">
+                {item}
+              </li>
+            ))}
+          </ul>
+        </aside>
+
+        <div>
+          {project.overview.map((paragraph, paragraphIndex) => (
+            <Reveal key={paragraphIndex} delay={paragraphIndex * 0.05}>
+              <p
+                className={
+                  paragraphIndex === 0
+                    ? 'max-w-2xl text-balance font-display text-[clamp(23px,2.6vw,34px)] leading-[1.16]'
+                    : 'mt-6 max-w-2xl text-pretty text-[15.5px] leading-relaxed text-muted'
+                }
+              >
+                {paragraph}
+              </p>
             </Reveal>
           ))}
+
+          <div className="mt-12 border-t border-line pt-6">
+            <p className="eyebrow text-faint">What it does</p>
+            <div className="mt-6 grid gap-x-8 gap-y-7 sm:grid-cols-2">
+              {project.features.map((feature, featureIndex) => (
+                <Reveal key={feature.title} delay={featureIndex * 0.04}>
+                  <p className="font-mono text-[10px] text-accent">0{featureIndex + 1}</p>
+                  <h2 className="mt-2 text-[15px] font-medium">{feature.title}</h2>
+                  <p className="mt-1.5 text-[13.5px] leading-relaxed text-muted">{feature.body}</p>
+                </Reveal>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="mt-16 grid gap-6 md:grid-cols-2">
-        <Reveal>
-          <div className="image-frame aspect-[4/3] rounded-image" style={{ background: project.tint }}>
-            <img src={project.cover} alt="" className="size-full object-cover" style={{ transform: 'scale(1.6)', transformOrigin: '30% 40%' }} />
-          </div>
-        </Reveal>
-        <Reveal delay={0.1}>
-          <div className="image-frame aspect-[4/3] rounded-image" style={{ background: project.tint }}>
-            <img src={project.cover} alt="" className="size-full object-cover" style={{ transform: 'scale(2.2)', transformOrigin: '70% 65%' }} />
-          </div>
-        </Reveal>
-      </div>
-
-      <Link to={`/work/${next.slug}`} className="group mt-32 block border-t border-line pt-10">
-        <p className="text-[14px] text-muted">Next project</p>
-        <div className="mt-3 flex items-end justify-between gap-6">
-          <h2 className="font-display text-[clamp(44px,8vw,120px)] transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-3">{next.title}</h2>
-          <span className="image-frame hidden aspect-[4/3] w-[260px] shrink-0 rounded-[20px] sm:block" style={{ background: next.tint }}>
-            <img src={next.cover} alt="" className="size-full object-cover transition-transform duration-700 group-hover:scale-105" />
+      <Link to={`/work/${next.slug}`} className="group mt-28 block border-t border-line pt-8 sm:mt-36">
+        <p className="eyebrow text-faint">Next project</p>
+        <div className="mt-3 flex items-center justify-between gap-6">
+          <h2 className="font-display text-[clamp(40px,7.2vw,108px)] transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-2">
+            {next.title}
+          </h2>
+          <span className="grid size-14 shrink-0 place-items-center rounded-full border border-line-strong text-fg transition-colors duration-300 group-hover:border-accent group-hover:bg-accent group-hover:text-accent-ink">
+            <ArrowUpRight className="size-6" />
           </span>
         </div>
       </Link>
